@@ -1,0 +1,2274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRITMind - AI Document Search & Retrieval</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6c7ee1;
+            --light-bg: #f5f7fa;
+            --dark-bg: #1a1a2e;
+            --light-text: #333;
+            --dark-text: #f5f7fa;
+            --card-light: #ffffff;
+            --card-dark: #252a41;
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-dark: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+        
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--card-light);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: var(--transition);
+        }
+        
+        body.dark-mode header {
+            background-color: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--light-text);
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        body.dark-mode .nav-links a {
+            color: var(--dark-text);
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--light-text);
+            transition: var(--transition);
+            padding: 8px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(74, 108, 247, 0.1);
+        }
+        
+        body.dark-mode .theme-toggle {
+            color: var(--dark-text);
+        }
+        
+        body.dark-mode .theme-toggle:hover {
+            background-color: rgba(74, 108, 247, 0.2);
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .hero-subtitle {
+            font-size: 20px;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            color: var(--light-text);
+            opacity: 0.9;
+        }
+        
+        body.dark-mode .hero-subtitle {
+            color: var(--dark-text);
+            opacity: 0.8;
+        }
+        
+        /* Upload Section */
+        .upload-section {
+            margin-bottom: 60px;
+        }
+        
+        .upload-container {
+            background-color: var(--card-light);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        body.dark-mode .upload-container {
+            background-color: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: var(--border-radius);
+            padding: 40px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 108, 247, 0.03);
+        }
+        
+        body.dark-mode .upload-area:hover {
+            background-color: rgba(74, 108, 247, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .file-types {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 20px;
+        }
+        
+        body.dark-mode .file-types {
+            color: #aaa;
+        }
+        
+        .upload-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .upload-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(74, 108, 247, 0.2);
+        }
+        
+        .upload-progress {
+            width: 100%;
+            height: 6px;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .upload-status {
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .upload-success {
+            color: var(--success-color);
+        }
+        
+        .upload-error {
+            color: var(--error-color);
+        }
+        
+        /* Search Section */
+        .search-section {
+            margin-bottom: 60px;
+        }
+        
+        .search-container {
+            background-color: var(--card-light);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+        }
+        
+        body.dark-mode .search-container {
+            background-color: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 10px;
+            position: relative;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            transition: var(--transition);
+            padding-right: 50px;
+        }
+        
+        body.dark-mode .search-input {
+            background-color: #333;
+            border-color: #444;
+            color: white;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+        }
+        
+        .search-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .search-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(74, 108, 247, 0.2);
+        }
+        
+        .search-loading {
+            position: absolute;
+            right: 120px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            display: none;
+        }
+        
+        /* Results Section */
+        .results-section {
+            margin-bottom: 60px;
+        }
+        
+        .results-container {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .results-list {
+            flex: 2;
+            background-color: var(--card-light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+        }
+        
+        body.dark-mode .results-list {
+            background-color: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .results-count {
+            font-weight: 600;
+        }
+        
+        .sort-options {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .sort-label {
+            font-size: 14px;
+        }
+        
+        .sort-select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: white;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        body.dark-mode .sort-select {
+            background-color: #333;
+            border-color: #444;
+            color: white;
+        }
+        
+        .result-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        body.dark-mode .result-item {
+            border-bottom-color: #444;
+        }
+        
+        .result-item:hover {
+            background-color: rgba(74, 108, 247, 0.05);
+            transform: translateX(5px);
+        }
+        
+        body.dark-mode .result-item:hover {
+            background-color: rgba(74, 108, 247, 0.1);
+        }
+        
+        .result-item::after {
+            content: '';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid #ccc;
+            border-top: 2px solid #ccc;
+            transform: rotate(45deg);
+            transition: var(--transition);
+        }
+        
+        .result-item:hover::after {
+            border-color: var(--primary-color);
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .result-title i {
+            font-size: 16px;
+        }
+        
+        .result-snippet {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--light-text);
+            opacity: 0.9;
+        }
+        
+        body.dark-mode .result-snippet {
+            color: var(--dark-text);
+            opacity: 0.8;
+        }
+        
+        .result-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #777;
+        }
+        
+        body.dark-mode .result-meta {
+            color: #aaa;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+        
+        body.dark-mode .no-results {
+            color: #aaa;
+        }
+        
+        .ai-summary {
+            flex: 1;
+            background-color: var(--card-light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+            position: sticky;
+            top: 100px;
+            align-self: flex-start;
+        }
+        
+        body.dark-mode .ai-summary {
+            background-color: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+        }
+        
+        .summary-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .ai-icon {
+            background-color: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .summary-title {
+            font-weight: 600;
+        }
+        
+        .summary-content p {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: var(--light-text);
+            opacity: 0.9;
+        }
+        
+        body.dark-mode .summary-content p {
+            color: var(--dark-text);
+            opacity: 0.8;
+        }
+        
+        .summary-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .summary-content li {
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--light-text);
+            opacity: 0.9;
+        }
+        
+        body.dark-mode .summary-content li {
+            color: var(--dark-text);
+            opacity: 0.8;
+        }
+        
+        .summary-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .summary-btn {
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        .ask-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .ask-btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .clear-btn {
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        
+        body.dark-mode .clear-btn {
+            background-color: #333;
+            color: #ddd;
+        }
+        
+        .clear-btn:hover {
+            background-color: #e4e6e9;
+        }
+        
+        body.dark-mode .clear-btn:hover {
+            background-color: #444;
+        }
+        
+        /* Document Preview */
+        .preview-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background-color: var(--card-light);
+            box-shadow: var(--shadow-light);
+            padding: 30px;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 200;
+        }
+        
+        body.dark-mode .preview-panel {
+            background-color: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+        }
+        
+        .preview-panel.active {
+            right: 0;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .preview-title {
+            font-weight: 600;
+            font-size: 20px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .close-preview {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--light-text);
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close-preview:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        body.dark-mode .close-preview {
+            color: var(--dark-text);
+        }
+        
+        body.dark-mode .close-preview:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .preview-content {
+            margin-bottom: 30px;
+        }
+        
+        .preview-content p {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: var(--light-text);
+            opacity: 0.9;
+        }
+        
+        body.dark-mode .preview-content p {
+            color: var(--dark-text);
+            opacity: 0.8;
+        }
+        
+        .preview-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .preview-content li {
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--light-text);
+            opacity: 0.9;
+        }
+        
+        body.dark-mode .preview-content li {
+            color: var(--dark-text);
+            opacity: 0.8;
+        }
+        
+        .preview-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .meta-item {
+            background-color: #f0f2f5;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        body.dark-mode .meta-item {
+            background-color: #333;
+            color: #ddd;
+        }
+        
+        .preview-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .preview-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .view-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .view-btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .download-btn {
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        
+        body.dark-mode .download-btn {
+            background-color: #333;
+            color: #ddd;
+        }
+        
+        .download-btn:hover {
+            background-color: #e4e6e9;
+        }
+        
+        body.dark-mode .download-btn:hover {
+            background-color: #444;
+        }
+        
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 150;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .results-container {
+                flex-direction: column;
+            }
+            
+            .ai-summary {
+                position: static;
+                margin-top: 30px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+            
+            .hero-subtitle {
+                font-size: 18px;
+            }
+            
+            .nav-links {
+                gap: 15px;
+            }
+            
+            .upload-area {
+                padding: 30px 20px;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .search-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .search-loading {
+                right: 20px;
+            }
+            
+            .preview-panel {
+                width: 100%;
+                right: -100%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .logo {
+                font-size: 20px;
+            }
+            
+            .logo i {
+                font-size: 24px;
+            }
+            
+            .hero-title {
+                font-size: 28px;
+            }
+            
+            .hero-subtitle {
+                font-size: 16px;
+            }
+            
+            .upload-container,
+            .search-container,
+            .results-list,
+            .ai-summary {
+                padding: 25px;
+            }
+            
+            .result-meta {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .preview-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* AI Chat Styles */
+        .chat-container {
+            background-color: var(--card-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: var(--shadow-light);
+        }
+
+        body.dark-mode .chat-container {
+            background-color: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+        }
+
+        body.dark-mode .chat-messages {
+            border-color: #444;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            align-items: flex-end;
+        }
+
+        .ai-message {
+            align-items: flex-start;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            background-color: #f0f2f5;
+        }
+
+        body.dark-mode .message-content {
+            background-color: #333;
+        }
+
+        .user-message .message-content {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        body.dark-mode .message-time {
+            color: #aaa;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        body.dark-mode .chat-input {
+            background-color: #333;
+            border-color: #444;
+            color: white;
+        }
+
+        .send-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .send-btn:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        /* Document Preview Actions */
+        .preview-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .preview-action {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #f0f2f5;
+            color: #333;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        body.dark-mode .preview-action {
+            background-color: #333;
+            color: #ddd;
+        }
+
+        .preview-action:hover {
+            background-color: #e4e6e9;
+        }
+
+        body.dark-mode .preview-action:hover {
+            background-color: #444;
+        }
+
+        .annotation-input {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+
+        body.dark-mode .annotation-input {
+            background-color: #333;
+        }
+
+        .annotation-input textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        body.dark-mode .annotation-input textarea {
+            background-color: #444;
+            border-color: #555;
+            color: white;
+        }
+
+        .save-annotation {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .save-annotation:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Highlight Mode */
+        .highlight-mode .preview-content p {
+            background-color: rgba(255, 255, 0, 0.2);
+            cursor: pointer;
+        }
+
+        body.dark-mode .highlight-mode .preview-content p {
+            background-color: rgba(255, 255, 0, 0.3);
+        }
+
+        /* Add these styles in the <style> section */
+        .ai-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ai-modal.active {
+            display: flex;
+        }
+
+        .ai-modal-content {
+            background-color: var(--card-light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: var(--shadow-light);
+            position: relative;
+        }
+
+        body.dark-mode .ai-modal-content {
+            background-color: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .ai-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .ai-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--light-text);
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        body.dark-mode .close-modal {
+            color: var(--dark-text);
+        }
+
+        .close-modal:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .close-modal:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .ai-question-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .ai-question-input {
+            background-color: #333;
+            border-color: #444;
+            color: white;
+        }
+
+        .ai-question-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+        }
+
+        .ai-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .ai-suggestion {
+            background-color: rgba(74, 108, 247, 0.1);
+            color: var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .ai-suggestion:hover {
+            background-color: rgba(74, 108, 247, 0.2);
+        }
+
+        .ai-analysis-result {
+            background-color: rgba(74, 108, 247, 0.05);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        body.dark-mode .ai-analysis-result {
+            background-color: rgba(74, 108, 247, 0.1);
+        }
+
+        .ai-analysis-result.active {
+            display: block;
+        }
+
+        .ai-loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .ai-loading.active {
+            display: flex;
+        }
+
+        .ai-loading .spinner {
+            width: 20px;
+            height: 20px;
+            border-width: 2px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <span>DocuMind</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#upload"><i class="fas fa-upload"></i> Upload</a>
+                    <a href="#search"><i class="fas fa-search"></i> Search</a>
+                    <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
+                    <a href="contact us.html"><i class="fas fa-envelope"></i> Contact</a>
+                </div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">AI-Powered Document Intelligence</h1>
+            <p class="hero-subtitle">Upload, search, and analyze your documents with advanced AI. Get instant insights and find exactly what you need in seconds.</p>
+        </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section id="upload" class="upload-section">
+        <div class="container">
+            <div class="upload-container">
+                <div class="upload-area" id="dropArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3 class="upload-text">Drag & Drop your files here</h3>
+                    <p class="file-types">Supports PDF, DOCX, PPTX, TXT (Max 50MB)</p>
+                    <input type="file" id="fileInput" multiple style="display: none;" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt">
+                    <button class="upload-btn" id="browseBtn">
+                        <i class="fas fa-folder-open"></i>
+                        Browse Files
+                    </button>
+                    <div class="upload-progress" id="uploadProgress">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="upload-status" id="uploadStatus"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section id="search" class="search-section">
+        <div class="container">
+            <div class="search-container">
+                <form class="search-form" id="searchForm">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Ask any question about your documents..." autocomplete="off">
+                    <div class="search-loading" id="searchLoading">
+                        <div class="spinner"></div>
+                    </div>
+                    <button type="submit" class="search-btn" id="searchBtn">
+                        <i class="fas fa-search"></i>
+                        Search
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section">
+        <div class="container">
+            <div class="results-container">
+                <div class="results-list" id="resultsList">
+                    <div class="results-header">
+                        <div class="results-count" id="resultsCount">0 results found</div>
+                        <div class="sort-options">
+                            <span class="sort-label">Sort by:</span>
+                            <select class="sort-select" id="sortSelect">
+                                <option value="relevance">Relevance</option>
+                                <option value="date-newest">Date (newest)</option>
+                                <option value="date-oldest">Date (oldest)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="no-results" id="noResults">
+                        <i class="fas fa-search" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                        <h3>No documents found</h3>
+                        <p>Upload documents or try a different search query</p>
+                    </div>
+                    
+                    <!-- Results will be dynamically inserted here -->
+                </div>
+                
+                <div class="ai-summary" id="aiSummary">
+                    <div class="summary-header">
+                        <div class="ai-icon">AI</div>
+                        <div class="summary-title">AI Summary</div>
+                    </div>
+                    <div class="summary-content" id="summaryContent">
+                        <p>Upload documents or perform a search to get AI-generated insights.</p>
+                    </div>
+                    <div class="summary-actions">
+                        <button class="summary-btn ask-btn" id="askBtn">
+                            <i class="fas fa-comment-alt"></i>
+                            Ask AI
+                        </button>
+                        <button class="summary-btn clear-btn" id="clearBtn">
+                            <i class="fas fa-eraser"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Document Preview Panel -->
+    <div class="overlay" id="overlay"></div>
+    <div class="preview-panel" id="previewPanel">
+        <div class="preview-header">
+            <h3 class="preview-title" id="previewTitle">
+                <i class="fas fa-file-pdf"></i>
+                Document Preview
+            </h3>
+            <button class="close-preview" id="closePreview">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="preview-meta" id="previewMeta">
+            <!-- Meta data will be inserted here -->
+        </div>
+        <div class="preview-content" id="previewContent">
+            <!-- Preview content will be inserted here -->
+        </div>
+        <div class="preview-actions">
+            <button class="preview-action" data-action="highlight">
+                <i class="fas fa-highlighter"></i>
+                Highlight
+            </button>
+            <button class="preview-action" data-action="annotate">
+                <i class="fas fa-comment-alt"></i>
+                Annotate
+            </button>
+            <button class="preview-action" data-action="share">
+                <i class="fas fa-share-alt"></i>
+                Share
+            </button>
+        </div>
+    </div>
+
+    <!-- Add this after the AI Summary section -->
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Ask a question about the documents...">
+            <button class="send-btn" id="sendBtn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Add this before the closing </body> tag -->
+    <div class="ai-modal" id="aiModal">
+        <div class="ai-modal-content">
+            <div class="ai-modal-header">
+                <div class="ai-modal-title">
+                    <i class="fas fa-robot"></i>
+                    Ask AI Assistant
+                </div>
+                <button class="close-modal" id="closeAiModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="ai-suggestions">
+                <div class="ai-suggestion">Summarize the main points</div>
+                <div class="ai-suggestion">Find key insights</div>
+                <div class="ai-suggestion">Compare documents</div>
+                <div class="ai-suggestion">Extract trends</div>
+            </div>
+            <input type="text" class="ai-question-input" id="aiQuestionInput" placeholder="Ask a specific question about the documents...">
+            <div class="ai-loading" id="aiLoading">
+                <div class="spinner"></div>
+                <span>Analyzing documents...</span>
+            </div>
+            <div class="ai-analysis-result" id="aiAnalysisResult"></div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileInput');
+        const browseBtn = document.getElementById('browseBtn');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('progressBar');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchLoading = document.getElementById('searchLoading');
+        const resultsList = document.getElementById('resultsList');
+        const resultsCount = document.getElementById('resultsCount');
+        const noResults = document.getElementById('noResults');
+        const sortSelect = document.getElementById('sortSelect');
+        const aiSummary = document.getElementById('aiSummary');
+        const summaryContent = document.getElementById('summaryContent');
+        const askBtn = document.getElementById('askBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const previewPanel = document.getElementById('previewPanel');
+        const overlay = document.getElementById('overlay');
+        const closePreview = document.getElementById('closePreview');
+        const previewTitle = document.getElementById('previewTitle');
+        const previewMeta = document.getElementById('previewMeta');
+        const previewContent = document.getElementById('previewContent');
+        const viewBtn = document.getElementById('viewBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        // Sample documents data
+        const sampleDocuments = [
+            {
+                id: 1,
+                title: "Q3 Financial Report 2023",
+                type: "pdf",
+                pages: 24,
+                date: "Oct 15, 2023",
+                snippet: "...revenue increased by <strong>15.7%</strong> compared to the previous quarter, exceeding our projected growth of 12%. The main contributors to this growth were...",
+                content: `
+                    <p>Executive Summary:</p>
+                    <p>The third quarter of 2023 has shown exceptional performance across all business units. Revenue increased by 15.7% compared to the previous quarter, exceeding our projected growth of 12%.</p>
+                    <p>Key highlights:</p>
+                    <ul>
+                        <li>Total revenue: $24.3M (↑15.7% QoQ)</li>
+                        <li>Operating margin: 28.4% (↑2.1% QoQ)</li>
+                        <li>Customer acquisition cost: $42 (↓8% QoQ)</li>
+                        <li>New enterprise clients: 14</li>
+                    </ul>
+                    <p>The Asia-Pacific region continues to be our fastest-growing market, with a 22% increase in new subscriptions...</p>
+                `,
+                url: "#"
+            },
+            {
+                id: 2,
+                title: "Strategic Plan 2024-2026",
+                type: "docx",
+                pages: 42,
+                date: "Nov 3, 2023",
+                snippet: "...expansion into Southeast Asian markets remains our top priority for the next three years. The analysis of <strong>market potential</strong> indicates that...",
+                content: `
+                    <p>Strategic Objectives 2024-2026:</p>
+                    <p>Our primary focus for the next three years will be expansion into Southeast Asian markets, with particular emphasis on Vietnam, Indonesia, and Thailand.</p>
+                    <p>Key initiatives:</p>
+                    <ul>
+                        <li>Establish local offices in Jakarta and Ho Chi Minh City by Q2 2024</li>
+                        <li>Partner with 3-5 regional distributors by end of 2024</li>
+                        <li>Localize product offerings for each market by Q3 2024</li>
+                        <li>Capture 15% market share in target segments by 2026</li>
+                    </ul>
+                    <p>Projected investment: $8.2M over three years with expected ROI of 32% by 2026...</p>
+                `,
+                url: "#"
+            },
+            {
+                id: 3,
+                title: "Market Analysis Report",
+                type: "pdf",
+                pages: 18,
+                date: "Sep 28, 2023",
+                snippet: "...consumer behavior trends indicate a shift towards <strong>sustainable products</strong>, with 68% of respondents stating...",
+                content: `
+                    <p>Consumer Trends Analysis:</p>
+                    <p>Our latest market research reveals significant shifts in consumer behavior, particularly around sustainability and digital engagement.</p>
+                    <p>Key findings:</p>
+                    <ul>
+                        <li>68% of consumers prefer sustainable products, even at premium prices</li>
+                        <li>54% have switched brands in the past year due to sustainability concerns</li>
+                        <li>Mobile shopping now accounts for 42% of all e-commerce (up from 35% in 2022)</li>
+                        <li>Video content influences 78% of purchasing decisions for Gen Z consumers</li>
+                    </ul>
+                    <p>Recommendations include accelerating our sustainability initiatives and increasing investment in mobile-first shopping experiences...</p>
+                `,
+                url: "#"
+            }
+        ];
+
+        // Current state
+        let currentDocuments = [];
+        let currentPreviewDoc = null;
+        let isDarkMode = false;
+
+        // Initialize the app
+        function init() {
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                enableDarkMode();
+            }
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Show empty state initially
+            updateResultsUI([]);
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // File upload
+            browseBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelection);
+            
+            // Drag and drop
+            dropArea.addEventListener('dragover', handleDragOver);
+            dropArea.addEventListener('dragleave', handleDragLeave);
+            dropArea.addEventListener('drop', handleDrop);
+            
+            // Search
+            searchForm.addEventListener('submit', handleSearch);
+            sortSelect.addEventListener('change', handleSortChange);
+            
+            // AI Summary actions
+            askBtn.addEventListener('click', handleAskAI);
+            clearBtn.addEventListener('click', handleClearResults);
+            
+            // Preview panel
+            closePreview.addEventListener('click', closeDocumentPreview);
+            overlay.addEventListener('click', closeDocumentPreview);
+            viewBtn.addEventListener('click', viewFullDocument);
+            downloadBtn.addEventListener('click', downloadDocument);
+        }
+
+        // Theme functionality
+        function toggleTheme() {
+            if (isDarkMode) {
+                disableDarkMode();
+            } else {
+                enableDarkMode();
+            }
+        }
+
+        function enableDarkMode() {
+            body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            localStorage.setItem('theme', 'dark');
+            isDarkMode = true;
+        }
+
+        function disableDarkMode() {
+            body.classList.remove('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', 'light');
+            isDarkMode = false;
+        }
+
+        // File upload functionality
+        function handleFileSelection() {
+            if (fileInput.files.length > 0) {
+                uploadFiles(fileInput.files);
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropArea.style.borderColor = 'var(--primary-color)';
+            dropArea.style.backgroundColor = 'rgba(74, 108, 247, 0.05)';
+        }
+
+        function handleDragLeave() {
+            dropArea.style.borderColor = '#ccc';
+            dropArea.style.backgroundColor = 'transparent';
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropArea.style.borderColor = 'var(--primary-color)';
+            dropArea.style.backgroundColor = 'transparent';
+            
+            if (e.dataTransfer.files.length > 0) {
+                uploadFiles(e.dataTransfer.files);
+            }
+        }
+
+        function uploadFiles(files) {
+            // Validate files
+            const validFiles = Array.from(files).filter(file => {
+                const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'text/plain'];
+                return validTypes.includes(file.type) && file.size <= 50 * 1024 * 1024; // 50MB limit
+            });
+            
+            if (validFiles.length === 0) {
+                showUploadStatus('Please upload valid files (PDF, DOC, DOCX, PPT, PPTX, TXT) under 50MB', 'error');
+                return;
+            }
+            
+            // Show upload progress
+            uploadProgress.style.display = 'block';
+            uploadStatus.style.display = 'none';
+            
+            // Simulate upload progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // Add the uploaded files to documents (in a real app, this would come from the server)
+                    const newDocs = validFiles.map((file, index) => ({
+                        id: sampleDocuments.length + index + 1,
+                        title: file.name,
+                        type: file.name.split('.').pop(),
+                        pages: Math.floor(Math.random() * 30) + 5,
+                        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+                        snippet: `This is a newly uploaded ${file.name.split('.').pop().toUpperCase()} file. Content analysis will be available after processing.`,
+                        content: `<p>This is the content of ${file.name}. In a real application, this would be extracted from the uploaded file.</p>`,
+                        url: "#"
+                    }));
+                    
+                    // Combine with existing documents
+                    currentDocuments = [...sampleDocuments, ...newDocs];
+                    updateResultsUI(currentDocuments);
+                    
+                    showUploadStatus(`${validFiles.length} files uploaded successfully!`, 'success');
+                    
+                    // Reset after 3 seconds
+                    setTimeout(() => {
+                        uploadProgress.style.display = 'none';
+                        progressBar.style.width = '0%';
+                    }, 3000);
+                }
+                progressBar.style.width = `${progress}%`;
+            }, 200);
+        }
+
+        function showUploadStatus(message, type) {
+            uploadStatus.textContent = message;
+            uploadStatus.className = 'upload-status';
+            uploadStatus.classList.add(`upload-${type}`);
+            uploadStatus.style.display = 'block';
+        }
+
+        // Search functionality
+        function handleSearch(e) {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            
+            if (query === '') {
+                return;
+            }
+            
+            // Show loading state
+            searchLoading.style.display = 'flex';
+            searchBtn.disabled = true;
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                performSearch(query);
+                searchLoading.style.display = 'none';
+                searchBtn.disabled = false;
+            }, 1500);
+        }
+
+        function performSearch(query) {
+            if (query.toLowerCase() === 'show all') {
+                // Show all documents if query is "show all"
+                currentDocuments = [...sampleDocuments];
+                updateResultsUI(currentDocuments);
+                return;
+            }
+            
+            // Simple search implementation (in a real app, this would be done server-side)
+            const results = sampleDocuments.filter(doc => {
+                return doc.title.toLowerCase().includes(query.toLowerCase()) || 
+                       doc.snippet.toLowerCase().includes(query.toLowerCase()) ||
+                       doc.content.toLowerCase().includes(query.toLowerCase());
+            });
+            
+            currentDocuments = results;
+            updateResultsUI(results);
+            
+            // Update AI summary based on search
+            updateAISummary(query, results);
+        }
+
+        function handleSortChange() {
+            const sortBy = sortSelect.value;
+            let sortedDocs = [...currentDocuments];
+            
+            switch (sortBy) {
+                case 'date-newest':
+                    sortedDocs.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    break;
+                case 'date-oldest':
+                    sortedDocs.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    break;
+                case 'relevance':
+                default:
+                    // Default is already sorted by relevance (as returned by search)
+                    break;
+            }
+            
+            updateResultsUI(sortedDocs, false); // Don't update summary when just sorting
+        }
+
+        // Results UI
+        function updateResultsUI(documents, updateSummary = true) {
+            if (documents.length === 0) {
+                resultsList.innerHTML = `
+                    <div class="results-header">
+                        <div class="results-count">0 results found</div>
+                        <div class="sort-options">
+                            <span class="sort-label">Sort by:</span>
+                            <select class="sort-select" id="sortSelect">
+                                <option value="relevance">Relevance</option>
+                                <option value="date-newest">Date (newest)</option>
+                                <option value="date-oldest">Date (oldest)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="no-results">
+                        <i class="fas fa-search" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                        <h3>No documents found</h3>
+                        <p>Upload documents or try a different search query</p>
+                    </div>
+                `;
+                
+                // Reattach event listener to the new sort select
+                document.getElementById('sortSelect').addEventListener('change', handleSortChange);
+                
+                if (updateSummary) {
+                    summaryContent.innerHTML = '<p>No documents found. Upload documents or try a different search query.</p>';
+                }
+                return;
+            }
+            
+            // Update results count
+            resultsCount.textContent = `${documents.length} ${documents.length === 1 ? 'result' : 'results'} found`;
+            
+            // Generate results HTML
+            let resultsHTML = `
+                <div class="results-header">
+                    <div class="results-count">${documents.length} ${documents.length === 1 ? 'result' : 'results'} found</div>
+                    <div class="sort-options">
+                        <span class="sort-label">Sort by:</span>
+                        <select class="sort-select" id="sortSelect">
+                            <option value="relevance" ${sortSelect.value === 'relevance' ? 'selected' : ''}>Relevance</option>
+                            <option value="date-newest" ${sortSelect.value === 'date-newest' ? 'selected' : ''}>Date (newest)</option>
+                            <option value="date-oldest" ${sortSelect.value === 'date-oldest' ? 'selected' : ''}>Date (oldest)</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            
+            documents.forEach(doc => {
+                const icon = getFileIcon(doc.type);
+                
+                resultsHTML += `
+                    <div class="result-item" data-id="${doc.id}">
+                        <div class="result-title">
+                            ${icon}
+                            ${doc.title}
+                        </div>
+                        <p class="result-snippet">${doc.snippet}</p>
+                        <div class="result-meta">
+                            <span>${doc.type.toUpperCase()} • ${doc.pages} pages</span>
+                            <span>Uploaded: ${doc.date}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsList.innerHTML = resultsHTML;
+            
+            // Reattach event listeners to result items
+            document.querySelectorAll('.result-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const docId = parseInt(item.getAttribute('data-id'));
+                    openDocumentPreview(docId);
+                });
+            });
+            
+            // Reattach event listener to the new sort select
+            document.getElementById('sortSelect').addEventListener('change', handleSortChange);
+        }
+
+        function getFileIcon(type) {
+            switch (type.toLowerCase()) {
+                case 'pdf':
+                    return '<i class="fas fa-file-pdf"></i>';
+                case 'doc':
+                case 'docx':
+                    return '<i class="fas fa-file-word"></i>';
+                case 'ppt':
+                case 'pptx':
+                    return '<i class="fas fa-file-powerpoint"></i>';
+                case 'txt':
+                    return '<i class="fas fa-file-alt"></i>';
+                default:
+                    return '<i class="fas fa-file"></i>';
+            }
+        }
+
+        // AI Summary functionality
+        function updateAISummary(query, documents) {
+            if (documents.length === 0) {
+                summaryContent.innerHTML = '<p>No documents found matching your search. Try a different query or upload more documents.</p>';
+                return;
+            }
+            
+            // Simple AI summary generation (in a real app, this would come from an AI API)
+            const titles = documents.map(doc => doc.title);
+            const snippets = documents.map(doc => doc.snippet.replace(/<[^>]+>/g, ''));
+            
+            let summaryHTML = `
+                <p>Based on your search for <strong>"${query}"</strong>, I found ${documents.length} relevant ${documents.length === 1 ? 'document' : 'documents'}.</p>
+                <p>Key insights:</p>
+                <ul>
+            `;
+            
+            // Extract some key phrases from snippets
+            const keyPhrases = [];
+            snippets.forEach(snippet => {
+                const phrases = snippet.match(/(?:<strong>)?([^<>.!?]+(?:\.|!|\?)?)(?:<\/strong>)?/g);
+                if (phrases) {
+                    phrases.forEach(phrase => {
+                        if (phrase.length > 20 && phrase.length < 100 && !keyPhrases.includes(phrase)) {
+                            keyPhrases.push(phrase.replace(/<[^>]+>/g, ''));
+                        }
+                    });
+                }
+            });
+            
+            // Add up to 3 key phrases to summary
+            keyPhrases.slice(0, 3).forEach(phrase => {
+                summaryHTML += `<li>${phrase}</li>`;
+            });
+            
+            summaryHTML += `
+                </ul>
+                <p>Would you like me to analyze any specific aspect of these documents?</p>
+            `;
+            
+            summaryContent.innerHTML = summaryHTML;
+        }
+
+        function handleAskAI() {
+            const currentSummary = summaryContent.textContent;
+            if (currentSummary.includes('No documents') || currentSummary.includes('Upload documents')) {
+                alert('Please upload documents or perform a search first.');
+                return;
+            }
+            
+            // Show the AI modal
+            const aiModal = document.getElementById('aiModal');
+            aiModal.classList.add('active');
+            
+            // Focus on the input
+            const aiQuestionInput = document.getElementById('aiQuestionInput');
+            aiQuestionInput.focus();
+            
+            // Set up event listeners for the modal
+            const closeAiModal = document.getElementById('closeAiModal');
+            const aiSuggestions = document.querySelectorAll('.ai-suggestion');
+            const aiAnalysisResult = document.getElementById('aiAnalysisResult');
+            const aiLoading = document.getElementById('aiLoading');
+            
+            // Close modal when clicking outside
+            aiModal.addEventListener('click', (e) => {
+                if (e.target === aiModal) {
+                    aiModal.classList.remove('active');
+                }
+            });
+            
+            // Close modal with close button
+            closeAiModal.addEventListener('click', () => {
+                aiModal.classList.remove('active');
+            });
+            
+            // Handle suggestion clicks
+            aiSuggestions.forEach(suggestion => {
+                suggestion.addEventListener('click', () => {
+                    aiQuestionInput.value = suggestion.textContent;
+                    analyzeWithAI(suggestion.textContent);
+                });
+            });
+            
+            // Handle question input
+            aiQuestionInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && aiQuestionInput.value.trim()) {
+                    analyzeWithAI(aiQuestionInput.value.trim());
+                }
+            });
+            
+            function analyzeWithAI(question) {
+                // Show loading state
+                aiLoading.classList.add('active');
+                aiAnalysisResult.classList.remove('active');
+                
+                // Simulate AI processing
+                setTimeout(() => {
+                    // Generate a more contextual response based on the question and documents
+                    const response = generateContextualResponse(question, currentDocuments);
+                    
+                    // Update the analysis result
+                    aiAnalysisResult.innerHTML = `
+                        <h4 style="margin-bottom: 10px; color: var(--primary-color);">Analysis Results:</h4>
+                        <p>${response}</p>
+                    `;
+                    
+                    // Hide loading and show result
+                    aiLoading.classList.remove('active');
+                    aiAnalysisResult.classList.add('active');
+                }, 2000);
+            }
+        }
+
+        function generateContextualResponse(question, documents) {
+            // Extract relevant information from documents
+            const titles = documents.map(doc => doc.title);
+            const snippets = documents.map(doc => doc.snippet.replace(/<[^>]+>/g, ''));
+            const contents = documents.map(doc => doc.content.replace(/<[^>]+>/g, ''));
+            
+            // Generate different types of responses based on the question
+            if (question.toLowerCase().includes('summarize') || question.toLowerCase().includes('main points')) {
+                return `Based on the ${documents.length} documents analyzed, here are the main points:
+                    <ul>
+                        ${documents.map(doc => `<li>${doc.title}: ${doc.snippet.substring(0, 100)}...</li>`).join('')}
+                    </ul>`;
+            } else if (question.toLowerCase().includes('insight') || question.toLowerCase().includes('key')) {
+                return `Key insights from the documents:
+                    <ul>
+                        ${extractKeyInsights(documents).map(insight => `<li>${insight}</li>`).join('')}
+                    </ul>`;
+            } else if (question.toLowerCase().includes('compare')) {
+                return `Comparison of the documents:
+                    <ul>
+                        ${generateComparison(documents)}
+                    </ul>`;
+            } else if (question.toLowerCase().includes('trend')) {
+                return `Trends identified in the documents:
+                    <ul>
+                        ${identifyTrends(documents).map(trend => `<li>${trend}</li>`).join('')}
+                    </ul>`;
+            } else {
+                // Generic response for other questions
+                return `Based on the analysis of ${documents.length} documents, I can tell you that ${generateGenericResponse(question, documents)}`;
+            }
+        }
+
+        function extractKeyInsights(documents) {
+            const insights = [];
+            documents.forEach(doc => {
+                const content = doc.content.toLowerCase();
+                if (content.includes('increase') || content.includes('growth')) {
+                    insights.push(`Growth trends identified in ${doc.title}`);
+                }
+                if (content.includes('market') || content.includes('customer')) {
+                    insights.push(`Market and customer insights found in ${doc.title}`);
+                }
+                if (content.includes('financial') || content.includes('revenue')) {
+                    insights.push(`Financial metrics and performance data in ${doc.title}`);
+                }
+            });
+            return insights.length > 0 ? insights : ['No specific insights found in the documents'];
+        }
+
+        function generateComparison(documents) {
+            if (documents.length < 2) {
+                return '<li>Not enough documents to generate a comparison</li>';
+            }
+            
+            let comparison = '';
+            for (let i = 0; i < documents.length - 1; i++) {
+                comparison += `<li>${documents[i].title} vs ${documents[i + 1].title}: `;
+                comparison += `Both documents discuss ${getCommonTopics(documents[i], documents[i + 1])}</li>`;
+            }
+            return comparison;
+        }
+
+        function getCommonTopics(doc1, doc2) {
+            const topics = ['market analysis', 'financial performance', 'customer insights', 'growth strategies'];
+            const commonTopics = topics.filter(topic => 
+                doc1.content.toLowerCase().includes(topic) && 
+                doc2.content.toLowerCase().includes(topic)
+            );
+            return commonTopics.length > 0 ? commonTopics.join(', ') : 'different aspects of the business';
+        }
+
+        function identifyTrends(documents) {
+            const trends = [];
+            documents.forEach(doc => {
+                const content = doc.content.toLowerCase();
+                if (content.includes('increase') || content.includes('growth')) {
+                    trends.push(`Positive growth trend identified in ${doc.title}`);
+                }
+                if (content.includes('decrease') || content.includes('decline')) {
+                    trends.push(`Declining metrics noted in ${doc.title}`);
+                }
+                if (content.includes('stable') || content.includes('consistent')) {
+                    trends.push(`Stable performance observed in ${doc.title}`);
+                }
+            });
+            return trends.length > 0 ? trends : ['No clear trends identified in the documents'];
+        }
+
+        function generateGenericResponse(question, documents) {
+            const responses = [
+                'the documents contain valuable insights about business performance and market trends.',
+                'there are several key metrics and data points that could be relevant to your query.',
+                'the analysis reveals important patterns and trends across different aspects of the business.',
+                'the documents provide comprehensive information about various business aspects.',
+                'there are significant findings that could help inform decision-making.'
+            ];
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        function handleClearResults() {
+            searchInput.value = '';
+            currentDocuments = [];
+            updateResultsUI([]);
+            summaryContent.innerHTML = '<p>Upload documents or perform a search to get AI-generated insights.</p>';
+        }
+
+        // Document Preview functionality
+        function openDocumentPreview(docId) {
+            const doc = [...sampleDocuments, ...currentDocuments].find(d => d.id === docId);
+            if (!doc) return;
+            
+            currentPreviewDoc = doc;
+            
+            // Update preview content
+            previewTitle.innerHTML = `
+                ${getFileIcon(doc.type)}
+                ${doc.title}
+            `;
+            
+            previewMeta.innerHTML = `
+                <span class="meta-item"><i class="far fa-file"></i> ${doc.type.toUpperCase()}</span>
+                <span class="meta-item"><i class="far fa-calendar"></i> ${doc.date}</span>
+                <span class="meta-item"><i class="far fa-copy"></i> ${doc.pages} pages</span>
+            `;
+            
+            previewContent.innerHTML = doc.content;
+            
+            // Show preview
+            previewPanel.classList.add('active');
+            overlay.classList.add('active');
+            
+            // Update download button
+            downloadBtn.setAttribute('data-filename', `${doc.title.replace(/\s+/g, '_')}.${doc.type}`);
+        }
+
+        function closeDocumentPreview() {
+            previewPanel.classList.remove('active');
+            overlay.classList.remove('active');
+            currentPreviewDoc = null;
+        }
+
+        function viewFullDocument() {
+            if (!currentPreviewDoc) return;
+            alert(`In a real application, this would open the full document: ${currentPreviewDoc.title}`);
+            // window.open(currentPreviewDoc.url, '_blank');
+        }
+
+        function downloadDocument() {
+            if (!currentPreviewDoc) return;
+            const filename = downloadBtn.getAttribute('data-filename');
+            
+            // Simulate download (in a real app, this would download the actual file)
+            const link = document.createElement('a');
+            link.href = `data:text/plain;charset=utf-8,${encodeURIComponent(`This is a simulated download of ${currentPreviewDoc.title}`)}`;
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Add AI chat functionality
+        function handleAIChat() {
+            const chatInput = document.getElementById('chatInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            if (!chatInput || !chatMessages || !sendBtn) return;
+            
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message user-message';
+            userMessage.innerHTML = `
+                <div class="message-content">
+                    <p>${message}</p>
+                    <span class="message-time">${new Date().toLocaleTimeString()}</span>
+                </div>
+            `;
+            chatMessages.appendChild(userMessage);
+            
+            // Clear input
+            chatInput.value = '';
+            
+            // Show AI typing indicator
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'chat-message ai-message typing';
+            typingIndicator.innerHTML = `
+                <div class="message-content">
+                    <p><i class="fas fa-ellipsis-h"></i></p>
+                </div>
+            `;
+            chatMessages.appendChild(typingIndicator);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Simulate AI response
+            setTimeout(() => {
+                // Remove typing indicator
+                chatMessages.removeChild(typingIndicator);
+                
+                // Add AI response
+                const aiResponse = document.createElement('div');
+                aiResponse.className = 'chat-message ai-message';
+                aiResponse.innerHTML = `
+                    <div class="message-content">
+                        <p>${generateAIResponse(message)}</p>
+                        <span class="message-time">${new Date().toLocaleTimeString()}</span>
+                    </div>
+                `;
+                chatMessages.appendChild(aiResponse);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1500);
+        }
+
+        function generateAIResponse(message) {
+            // Simple response generation (in a real app, this would call an AI API)
+            const responses = [
+                "Based on the documents, I can tell you that...",
+                "The analysis shows that...",
+                "Looking at the data, we can see that...",
+                "The documents indicate that...",
+                "From what I've analyzed, I can say that..."
+            ];
+            
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            return `${randomResponse} ${message.toLowerCase().includes('financial') ? 'The financial metrics show positive trends.' : 
+                    message.toLowerCase().includes('market') ? 'Market conditions are favorable for expansion.' :
+                    message.toLowerCase().includes('customer') ? 'Customer satisfaction metrics are improving.' :
+                    'The data suggests positive outcomes across key metrics.'}`;
+        }
+
+        // Add event listeners for new functionality
+        function setupAdditionalEventListeners() {
+            // AI Chat functionality
+            const chatInput = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            if (chatInput && sendBtn) {
+                sendBtn.addEventListener('click', handleAIChat);
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        handleAIChat();
+                    }
+                });
+            }
+            
+            // Document preview actions
+            const previewActions = document.querySelectorAll('.preview-action');
+            previewActions.forEach(action => {
+                action.addEventListener('click', (e) => {
+                    const actionType = e.currentTarget.getAttribute('data-action');
+                    handlePreviewAction(actionType);
+                });
+            });
+        }
+
+        function handlePreviewAction(actionType) {
+            if (!currentPreviewDoc) return;
+            
+            switch (actionType) {
+                case 'highlight':
+                    // Toggle highlight mode
+                    document.body.classList.toggle('highlight-mode');
+                    break;
+                case 'annotate':
+                    // Show annotation input
+                    const annotationInput = document.createElement('div');
+                    annotationInput.className = 'annotation-input';
+                    annotationInput.innerHTML = `
+                        <textarea placeholder="Add your annotation..."></textarea>
+                        <button class="save-annotation">Save</button>
+                    `;
+                    previewContent.appendChild(annotationInput);
+                    break;
+                case 'share':
+                    // Show share options
+                    alert(`Share options for ${currentPreviewDoc.title}`);
+                    break;
+            }
+        }
+
+        // Initialize additional functionality
+        function initAdditionalFeatures() {
+            setupAdditionalEventListeners();
+        }
+
+        // Update the main init function to include new features
+        function init() {
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                enableDarkMode();
+            }
+            
+            // Set up event listeners
+            setupEventListeners();
+            setupAdditionalEventListeners();
+            
+            // Show empty state initially
+            updateResultsUI([]);
+            
+            // Initialize additional features
+            initAdditionalFeatures();
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
